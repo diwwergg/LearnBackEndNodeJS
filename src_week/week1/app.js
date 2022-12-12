@@ -6,8 +6,11 @@ app.get('/', (req, res) => {
 }
 );
 
+// get /about
 app.get('/about', (req, res) => {
-    res.send('Mr. Thawatchai Buachan');
+    res.send(
+        '<h1 style="background-color: aquamarine;">This is about page.</h1>'
+    );
 }
 );
 
@@ -17,19 +20,42 @@ app.get('/my-html', (req, res) => {
 );
 
 app.get('/my-json-api', (req, res) => {
+    res.send({
+        name: 'Thawatchai Buachan'
+    });
+}
+);
+
+app.get('/my-json-api2', (req, res) => {
     res.json({
         name: 'Thawatchai Buachan',
         age: 22,
         email: 'tawatchaibuajun@gmail.com'
     });
-
+}
+);
+// get /my-json-api3 
+app.get('/my-json-api3', (req, res) => {
+    res.json({
+        'University': 'PIM',
+    });
 }
 );
 
-// my-id
 app.get('/my-id', (req, res) => {
     res.send('My ID is 62130500021');
 });
+
+// Homework 3
+app.get('/read-user', (req, res) => {
+    res.sendFile('Day1/users.json', { root: __dirname });
+});
+
+// get /users2
+app.get('/users2', (req, res) => {
+    res.json({data});
+}
+);
 
 app.listen(3000, () => {
     // set text in terminal color is green 

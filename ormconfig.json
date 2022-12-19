@@ -1,0 +1,10 @@
+{
+    "type": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "12345678",
+    "database": "db1",
+    "entities": ["src_week/week2/model/*.ts"],
+    "synchronize": true
+  }

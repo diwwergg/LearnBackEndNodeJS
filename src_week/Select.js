@@ -38,64 +38,56 @@ class Select {
     }
 
     start() {
-        stdout.write(this.question + '\n')
-        for (let opt = 0; opt < this.options.length; opt++) {
-            this.options[opt] = this.pointer + " " + this.options[opt]
+        return new Promise((resolve) => {
+          process.stdout.write(`${this.question}\n`);
+          for (let opt = 0; opt < this.options.length; opt++) {
+            this.options[opt] = `${this.pointer} ${this.options[opt]}`;
             if (opt === this.options.length - 1) {
-                this.input = this.options.length - 1
-                this.options[opt] += '\n'
-                stdout.write(this.color(this.options[opt], this._color))
+              this.input = this.options.length - 1;
+              this.options[opt] += '\n';
+              process.stdout.write(this.color(this.options[opt], this._color));
             } else {
-                this.options[opt] += '\n'
-                stdout.write(this.options[opt])
+              this.options[opt] += '\n';
+              process.stdout.write(this.options[opt]);
             }
-            this.cursorLocs.y = opt + 1
-        }
+            this.cursorLocs.y = opt + 1;
+          }
+    
+          process.stdin.setRawMode(true);
+          process.stdin.resume();
+          process.stdin.setEncoding('utf-8');
+          this.hideCursor();
+          process.stdin.on('data', this.pn(this, resolve));
+        });
+      }
 
-        stdin.setRawMode(true)
-        stdin.resume()
-        stdin.setEncoding('utf-8')
-        this.hideCursor()
-        stdin.on("data", this.pn(this))
-    }
+    pn(self, resolve) {
+    return (c) => {
+      switch (c) {
+        case '\u0004': // Ctrl-d
+        case '\r':
+        case '\n':
+          return self.enter(resolve);
+        case '\u0003': // Ctrl-c
+          return self.ctrlc();
+        case '\u001b[A':
+          return self.upArrow();
+        case '\u001b[B':
+          return self.downArrow();
+      }
+    };
+  }
 
-    pn(self) {
-        return (c) => {
-
-            switch (c) {
-                case '\u0004': // Ctrl-d
-                case '\r':
-                case '\n':
-                    return self.enter()
-                case '\u0003': // Ctrl-c
-                    return self.ctrlc()
-                case '\u001b[A':
-                    return self.upArrow()
-                case '\u001b[B':
-                    return self.downArrow()
-
-                    /*case '\u001B\u005B\u0041': // up
-                        return self.upArrow()
-                    case '\u001B\u005B\u0042': // right
-                        return self.upArrow()
-                    case '\u001B\u005B\u0043': // down
-                        return self.downArrow()
-                    case '\u001B\u005B\u0044': // left
-                        return self.downArrow()*/
-            }
-        }
-    }
-
-     enter() {
-        stdin.removeListener('data', this.pn)
-        stdin.setRawMode(false)
-        stdin.pause()
-        this.showCursor()
-        rdl.cursorTo(stdout, 0, this.options.length + 1)
-        l("\nYou selected: " + this.answers[this.input])
-            //this.input = null
-    }
-
+  enter(resolve) {
+    process.stdin.removeListener('data', this.pn);
+    process.stdin.setRawMode(false);
+    process.stdin.pause();
+    this.showCursor();
+    rdl.cursorTo(process.stdout, 0, this.options.length + 1);
+    const selectedAnswer = this.answers[this.input];
+    console.log(`\nYou selected: ${selectedAnswer}`);
+    resolve(selectedAnswer);
+  }
     ctrlc() {
         stdin.removeListener('data', this.pn)
         stdin.setRawMode(false)

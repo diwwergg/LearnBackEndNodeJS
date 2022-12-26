@@ -1,0 +1,17 @@
+select * from employees;
+
+delete from employees where id = 5;
+
+alter table employees add column address varchar(255);
+
+select count(id) from employees; 
+
+select * from employees 
+where age < 20 ;
+
+select firstname as FirstName, age  from employees;
+
+select * from employees
+where firstname like 'noah';
+
+update employees set firstname = "Neil" where id = 1;

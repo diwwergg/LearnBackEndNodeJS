@@ -1,6 +1,6 @@
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = ' '//"mongodb+srv://diwwergg:ZoPT16s0z37He8Ff@cluster0.cgpglgr.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://diwwergg:<password>@cluster0.cgpglgr.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 // user name: diwwergg
@@ -28,8 +28,6 @@ client.connect(err => {
 //     console.log("Database created!");
 //     db.close();
 // });
-
-
 
 
 // Profile collection

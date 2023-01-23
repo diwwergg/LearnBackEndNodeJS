@@ -3,10 +3,11 @@ const app = express();
 const port = 3000;
 const request = require('request');
 const openweatherApi = {
-    key: 'abcd',
+    key: 'fa9536893743fbb19dc8aa724a3f04cc',
     city: 'Nonthaburi'
 }
 const api = `http://api.openweathermap.org/data/2.5/weather?q=${openweatherApi.city}&appid=${openweatherApi.key}&units=metric`;
+const api2 = `https://openweathermap.org/data/2.5/weather?id=1608048&appid=${openweatherApi.key}&units=metric`;
 
 app.get('/', (req, res) => {
     res.send(`<h1>Openweather Get Temp</h1>`);
@@ -25,6 +26,19 @@ app.get('/getTemp', (req, res) => {
         }
     });
 
+});
+
+app.get('/getTemp2', (req, res) => {
+    request(api2, (error, response, body) => {
+        if (error) {
+            console.log(error);
+            res.send('Error').status(400);
+        } else {
+            const data = JSON.parse(body);
+            console.log(data);
+            res.send(data).status(200);
+        }
+    });
 });
 
 app.listen(port, () => {

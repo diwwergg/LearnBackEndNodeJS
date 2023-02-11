@@ -1,89 +1,122 @@
-const mysql = require("mysql2/promise");
-const express = require("express");
-
-// Express
+const express = require('express');
+const mysql = require('mysql2');
 const app = express();
 const port = 3000;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
-
-
-// Database connection
+// connect to mysql
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '12345678',
-    database: 'db1',
+    database: 'pim',
     port: 3306
 });
-
 
 connection.connect((err) => {
     if (err) {
         console.log('Error connecting to Db');
-        console.log(err);
         return;
     }
     console.log('Connection established');
 });
 
-const menu = [
-    {
-        "name": "latte",
-        "size": ["big","small"],
-        "sweetness": [100, 75, 50, 0]
-    },
-    {
-        "name": "expresso",
-        "size": ["big","small"],
-        "sweetness": [100, 75, 50, 0]
-    },
-    {
-        "name": "americano",
-        "size": ["big","small"],
-        "sweetness": [100, 75, 50, 0]
-    }
-]
 
+const menu = {
+    coffee_name: ['Americano', 'Cappuccino', 'Espresso', 'Latte', 'Mocha'],
+    size: ['Small', 'Medium', 'Big'],
+    sweetness: [100, 70, 50, 30, 0]
+}
 
-app.get("/menu", async (req, res) => {
-    res.status(200).json(menu)
-})
+app.get('/', (req, res) => {
+    res.send('Coffee Shop');
+});
+
+app.get('/menu', (req, res) => {
+    res.status(200).json(menu);
+});
 
 // create coffee order
-app.post("/coffee",async  (req, res) => {
-    const { name, size, sweetness } = req.body;
-    const sql = `INSERT INTO coffee_drinks (name, size, sweetness) VALUES ('${name}', '${size}', '${sweetness}')`;
-    const [rows, fields] = await connection.execute(sql);
-    res.status(200).send(rows)
+app.post('/coffee' ,(req, res) => {
+    const coffee_name = req.query.coffee_name;
+    const size = req.query.size;
+    const sweetness = req.query.sweetness;
+    if (coffee_name === undefined || size === undefined || sweetness === undefined) {
+        res.status(400).json({ message: `coffee_name = ${coffee_name} size = ${size} sweetness = ${sweetness}` });
+        return;
+    }
+    const sql = `INSERT INTO coffee (coffee_name, size, sweetness) VALUES ('${coffee_name}', '${size}', ${sweetness})`;
+    connection.query(sql, (err, results, fields) => {
+        if (err) {
+            res.status(400).json({ message: err });
+            return;
+        }
+        res.status(200).json(results);
+    });
+
 })
 
-//add sweetness to coffee
-app.put("/coffee",async  (req, res) => {
-    const { id, sweetness } = req.body;
-    const sql = `UPDATE coffee_drinks SET sweetness = '${sweetness}' WHERE id = '${id}'`;
-    const [rows, fields] = await connection.execute(sql);
-    res.status(200).send(rows)
-})
+// get coffee order all 
+app.get('/coffee', (req, res) => {
+    const sql = `SELECT * FROM coffee`;
+    connection.query(sql, (err, results, fields) => {
+        if (err) {
+            res.status(400).json({ message: err });
+            return;
+        }
+        res.status(200).json(results);
+    });
+});
 
-// delete coffee order
-app.delete("/coffee/:id", async (req, res) => {
+// get coffee order by id
+app.get('/coffee/:id', (req, res) => {
     const id = req.params.id;
-    const sql = `DELETE FROM coffee_drinks WHERE id = '${id}'`;
-    const [rows, fields] = await connection.execute(sql);
-    res.status(200).send(rows)
-})
+    const sql = `SELECT * FROM coffee WHERE id = ${id}`;
+    connection.query(sql, (err, results, fields) => {
+        if (err) {
+            res.status(400).json({ message: err });
+            return;
+        }
+        res.status(200).json(results);
+    }
+    );
+});
 
-// get all coffee orders
-app.get("/coffee", async (req, res) => {
-    const sql = `SELECT * FROM coffee_drinks`;
-    const [rows, fields] = await connection.execute(sql);
-})
+// update coffee order by id
+app.put('/coffee/:id', (req, res) => {
+    const id = req.params.id;
+    const coffee_name = req.query.coffee_name;
+    const size = req.query.size;
+    const sweetness = req.query.sweetness;
+    if (coffee_name === undefined || size === undefined || sweetness === undefined) {
+        res.status(400).json({ message: `coffee_name = ${coffee_name} size = ${size} sweetness = ${sweetness}` });
+        return;
+    }
+    const sql = `UPDATE coffee SET coffee_name = '${coffee_name}', size = '${size}', sweetness = ${sweetness} WHERE id = ${id}`;
+    connection.query(sql, (err, results, fields) => {
+        if (err) {
+            res.status(400).json({ message: err });
+            return;
+        }
+        res.status(200).json(results);
+    });
 
-app.get('/' , (req, res) => {
-    res.send('Coffee Shop')
-})
+});
+
+// delete coffee order by id    
+app.delete('/coffee/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = `DELETE FROM coffee WHERE id = ${id}`;
+    connection.query(sql, (err, results, fields) => {
+        if (err) {
+            res.status(400).json({ message: err });
+            return;
+        }
+        res.status(200).json(results);
+    }
+    );
+});
 
 
-app.listen(port, () => console.log(`App started on port ${port}!`));
+app.listen(port, () => {
+    console.log(`app listening at http://localhost:${port}`);
+});

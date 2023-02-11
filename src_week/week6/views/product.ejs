@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-gray-100">
+    <h1 class="text-5xl font-medium text-center">Coffee shop</h1>
+    <div class="flex justify-center my-3">
+        <button onclick="getProduct(1)" class="bg-blue-500 hover:bg-blue-400 text-white font-medium py-2 px-4 rounded-lg mx-1">Product 1</button>
+        <button onclick="getProduct(2)" class="bg-blue-500 hover:bg-blue-400 text-white font-medium py-2 px-4 rounded-lg mx-1">Product 2</button>
+        <button onclick="getProduct(3)" class="bg-blue-500 hover:bg-blue-400 text-white font-medium py-2 px-4 rounded-lg mx-1">Product 3</button>
+    </div>
+    <h1 class="text-3xl font-medium text-center mt-10">
+        <%= product.name %>
+    </h1>
+    <div class="flex justify-center mt-10">
+        <ul>
+            <li><img src="<%= product.image%>" alt="<%= product.name %>"></li>
+            <li class="text-xl font-medium mt-10">Price: <%= product.price %></li>
+            <li class="text-xl font-medium mt-10">Description: <%= product.description %></li>
+        </ul>
+    </div>
+    <script>
+        const getProduct = (id) => { window.location.href = `http://localhost:3000/product${id}`; }
+    </script>
+</body>
+
+
+</html>
